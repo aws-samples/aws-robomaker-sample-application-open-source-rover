@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>rover_gazebo</name>
+  <version>0.0.0</version>
+  <description>The rover-gazebo package</description>
+  <author email="ros-contributions@amazon.com">AWS RoboMaker</author>
+  <maintainer email="ros-contributions@amazon.com">AWS RoboMaker</maintainer>
+  <license>MIT</license>
+
+  <!-- The *depend tags are used to specify dependencies -->
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_ros_control</depend>
+  <depend>gazebo_plugins</depend>
+  <depend>xacro</depend>
+  <depend>rover_description</depend>
+  <depend>ros_control</depend>
+  <depend>ros_controllers</depend>
+  <depend>joint_state_controller</depend>
+  <depend>teleop_twist_keyboard</depend>
+  
+  <!-- Support camera operations -->
+  <depend>image_transport</depend>
+  <depend>compressed_image_transport</depend>
+  
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
+  </export>
+</package>

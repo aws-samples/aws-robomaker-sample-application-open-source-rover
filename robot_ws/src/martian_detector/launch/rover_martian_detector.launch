@@ -1,0 +1,13 @@
+<launch>
+    
+    <!-- TODO: add h/w bringup here -->
+
+    <!-- Include the .launch system used also by simulation -->
+    <include file="$(find martian_detector)/launch/martian_detector.launch">
+        <arg name="use_sim_time" value="false"/>
+        <arg name="auto_capture" value="false"/> 
+    </include>
+
+	<node name="lcd_matrix_updater" pkg="martian_detector" type="lcd_matrix_updater" />
+
+</launch>

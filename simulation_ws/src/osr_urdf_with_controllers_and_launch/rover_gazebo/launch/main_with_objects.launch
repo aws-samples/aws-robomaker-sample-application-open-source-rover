@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <include file="$(find rover_gazebo)/launch/osr_mars_world_object_world.launch"/>
+  <include file="$(find rover_gazebo)/launch/osr_spawn.launch"/>
+  
+</launch>

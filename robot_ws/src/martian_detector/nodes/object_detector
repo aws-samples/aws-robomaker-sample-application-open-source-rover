@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+"""
+ Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ software and associated documentation files (the "Software"), to deal in the Software
+ without restriction, including without limitation the rights to use, copy, modify,
+ merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
+
+import rospy
+import boto3
+import time
+
+from std_msgs.msg import String
+from sensor_msgs.msg import CompressedImage, Joy
+
+CAMERA_TOPIC = rospy.get_param('~/object_detector/camera_topic', '/camera/image_raw/compressed')
+AWS_REGION = rospy.get_param('~/object_detector/aws_region', 'us-west-2')
+AUTO_CAPTURE = rospy.get_param('~/object_detector/auto_capture', True)
+AUTO_CAPTURE_RATE = 1 # When using auto capture, take a photo every second
+IMAGE_CAPTURE_WAIT = 3 # At least 3 seconds between image captures to not spam rekognition
+
+class ObjectDetector():
+
+    def __init__(self):
+        self.pub = rospy.Publisher('/detected_objects', String, queue_size=1)
+        self.rekog = boto3.client('rekognition', AWS_REGION)
+        self.joysub = rospy.Subscriber("/joy", Joy, self.joystick_input)
+        self.last_image_time = 0
+
+    def joystick_input(self, data):
+        dpad = data.buttons[0:]
+        button_pressed = any(dpad)
+        rospy.loginfo('Joystick input detected.  Button pressed: %s.' % str(button_pressed))
+
+        if button_pressed and time.time() > self.last_image_time + IMAGE_CAPTURE_WAIT:
+            self.last_image_time = time.time()
+            self.process_image()
+
+    def process_image(self):
+        # Get picture from appropriate camera topic and send to Rekognition for labels
+        rospy.loginfo('Getting image from camera')
+        img = self.get_image()
+
+        if img is None:
+            # No image was returned
+            rospy.logwarn('No image was returned from the camera.')
+
+        rospy.loginfo('Sending image to Rekognition for analysis.')
+        # Call Rekognition
+        try:
+            response = self.rekog.detect_labels(
+                Image={'Bytes': img},
+                MinConfidence=50,
+                MaxLabels=10
+            )
+            labels = self.sort_labels(response)
+            rospy.loginfo('Following labels detected: %s' % (labels))
+
+        except Exception as e:
+            rospy.logerr('Error processing Rekognition: %s', e)
+        else:
+            # Write detected lables to /detected_objects
+            self.pub.publish(",".join(labels))
+        
+        return
+    
+    def get_image(self):
+        image = None
+        try:
+            # Get one image from the camera and return it
+            image = rospy.wait_for_message(CAMERA_TOPIC, CompressedImage, timeout=3).data
+        except Exception as e:
+            rospy.logerr('Error getting image from camera: %s', e)
+        else:
+            return image
+            
+    def sort_labels(self, rek_response):
+        '''Return labels sorted by confidence as JSON object'''
+        labels = rek_response['Labels']
+        list = []
+        sorted_list = sorted(labels, key=lambda k: k['Confidence'])
+        for i in sorted_list:
+            list.append(i['Name'])
+        return(list)
+
+def main():
+    rospy.init_node('object_detector')
+    
+    detector = ObjectDetector()
+    
+    rate = rospy.Rate(AUTO_CAPTURE_RATE) # Process an image once a second
+    while not rospy.is_shutdown():
+        if AUTO_CAPTURE == True:
+            detector.process_image()
+        rate.sleep()
+
+
+if __name__ == '__main__':
+    main()
