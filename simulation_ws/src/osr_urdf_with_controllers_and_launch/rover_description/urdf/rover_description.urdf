@@ -538,7 +538,7 @@
   
   <joint name="camera_joint" type="fixed">
     <axis xyz="0 1 0" />
-    <origin xyz="1 0 1" rpy="0 0 0"/>
+    <origin xyz="1 0 1" rpy="0 0 3.14"/>
     <parent link="body"/>
     <child link="camera_link"/>
   </joint>
@@ -546,7 +546,7 @@
   <!-- Camera -->
   <link name="camera_link">
   <collision>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="-1 0 0" rpy="0 0 0"/>
     <geometry>
       <box size="1 1 1"/>
     </geometry>

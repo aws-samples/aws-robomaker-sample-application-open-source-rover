@@ -37,21 +37,21 @@
       }
     },
     {
-      "id": "sim-robot",
+      "id": "sim-robot-with-simple-world",
       "name": "Mars Rover Simulation",
       "type": "simulation",
       "cfg": {
         "simulation": {
           "maxJobDurationInSeconds": 14400,
           "failureBehavior": "Fail",
-          "iamRole": "<YOUR_IAM_ROLE>",
-          "outputLocation": "<YOUR_S3_BUCKET>",
+          "iamRole": "arn:aws:iam::127796135357:role/robomaker-simulation-role",
+          "outputLocation": "os-rover-assets",
           "tags": {}
         },
         "robotApp": {
           "name": "martian-detector-robot",
           "sourceBundleFile": "./aws-robomaker-sample-application-mars-rover/robot_ws/bundle/output.tar",
-          "s3Bucket": "<YOUR_S3_BUCKET>",
+          "s3Bucket": "os-rover-assets",
           "architecture": "X86_64",
           "launchConfig": {
             "packageName": "martian_detector",
@@ -67,7 +67,7 @@
           "name": "rover-sim",
           "sourceBundleFile": "./aws-robomaker-sample-application-mars-rover/simulation_ws/bundle/output.tar",
           "architecture": "X86_64",
-          "s3Bucket": "<YOUR_S3_BUCKET>",
+          "s3Bucket": "os-rover-assets",
           "launchConfig": {
             "packageName": "rover_gazebo",
             "launchFile": "main_with_objects.launch",
@@ -124,7 +124,7 @@
       "runCfgIds": [
         "simulation-build",
         "simulation-bundle",
-        "sim-robot"
+        "sim-robot-with-simple-world"
       ]
     }
   ]

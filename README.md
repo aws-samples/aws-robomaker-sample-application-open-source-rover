@@ -40,14 +40,13 @@ colcon build
 
 Launch the application with the following commands:
 
-
-- *Running Robot Application *
+*Running Robot Application*
 ```bash
 source robot_ws/install/local_setup.sh
 roslaunch martian_detector martian_detector.launch
 ```
 
-- *Running Simulation Application*
+*Running Simulation Application*
 ```bash
 source simulation_ws/install/local_setup.sh
 roslaunch rover_gazebo main_with_objects.launch
@@ -91,6 +90,10 @@ and [create a simulation job](https://docs.aws.amazon.com/robomaker/create-simul
 /notifier
 /object_detector
 ```
+
+## Running the demonstration and workshop
+
+Full instructions on how to setup the AWS cloud infrastructure and run the demo can be found at: [https://www.robomakerworkshops.com](https://www.robomakerworkshops.com).
 
 ## License
 

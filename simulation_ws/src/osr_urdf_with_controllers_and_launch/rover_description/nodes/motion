@@ -29,8 +29,8 @@ class OSRMotionControl:
 		self.robot_width = 45
 		self.robot_length = 76
 		self.max_turn_angle_in_radians = 0.78
-		self.speed_scale_factor = 10
-		self.constant_turn_angle_in_radians = 0.3
+		self.speed_scale_factor = 5
+		self.constant_turn_angle_in_radians = 0.4
 		
 		self.controller_ns = "rover_ns"
 		self.controller_command = "command"
@@ -92,13 +92,15 @@ class OSRMotionControl:
 		self.publishers['bogie_left_corner_lf_controller'].publish( data[2] )
 		self.publishers['rocker_left_corner_lb_controller'].publish( data[3] )
 	
-	# TODO: This is a simple implementation. 
+	# TODO: Implement backwards motion.
 	def set_speed(self, speed):
-		""" Set the current speed of the wheels. """
-		speed = speed if speed < 100 else 100
-		self.send_motor_command([speed, speed, speed, speed, speed, speed])
+		""" Set the current speed of the wheels. Max speed is 100, only go forwards. """
 		
-	# TODO: This is a simple implementation. 
+		# At this time, the robot only moves forward.
+		if speed >= 0:
+			self.send_motor_command([speed*-1, speed*-1, speed*-1, speed, speed, speed])
+		
+	# TODO: Implement granular turing motions. Right now it is set to a constant.
 	def set_turning_angle(self, angular_velocity):
 		turn_angle_radians = 0.0
 		if (angular_velocity<0):
@@ -106,10 +108,10 @@ class OSRMotionControl:
 		elif (angular_velocity>0):
 			turn_angle_radians = self.constant_turn_angle_in_radians
 		
-		self.send_steering_command([turn_angle_radians, 
-			turn_angle_radians*-1, 
+		self.send_steering_command([turn_angle_radians*-1, 
 			turn_angle_radians, 
-			turn_angle_radians*-1])
+			turn_angle_radians*-1, 
+			turn_angle_radians])
 			
 	def start(self):
 		""" Starting state of the robot. """
