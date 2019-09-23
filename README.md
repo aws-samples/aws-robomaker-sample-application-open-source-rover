@@ -1,4 +1,4 @@
-# AWS RoboMaker Sample Application - Mars Rover
+# AWS RoboMaker Sample Application - Open Source Rover
 
 This application is an example that demostrates how to build and end-to-end robotics system. It highlights the Open Source Rover project and includes a URDF file modeled after the popular open source project. To learn more about the open source rover, check it out [here](https://opensourcerover.jpl.nasa.gov/)
 
