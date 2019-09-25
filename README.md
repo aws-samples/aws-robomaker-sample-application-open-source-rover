@@ -1,6 +1,6 @@
 # AWS RoboMaker Sample Application - Open Source Rover
 
-This application is an example that demostrates how to build and end-to-end robotics system. It highlights the Open Source Rover project and includes a URDF file modeled after the popular open source project. To learn more about the open source rover, check it out [here](https://opensourcerover.jpl.nasa.gov/)
+This sample application demonstrates and end-to-end robotics system with the Open Source Rover from NASA JPL. It includes a URDF file modeled after the popular open source project. To learn more about the open source rover, check it out [here](https://opensourcerover.jpl.nasa.gov/)
 
 _RoboMaker sample applications include third-party software licensed under open-source licenses and is provided for demonstration purposes only. Incorporation or use of RoboMaker sample applications in connection with your production workloads or a commercial products or devices may affect your legal rights or obligations under the applicable open-source licenses. Source code information can be found [here](https://s3.console.aws.amazon.com/s3/buckets/robomaker-applications-us-east-1-72fc243f9355/hello-world/?region=us-east-1)._
 
@@ -91,7 +91,14 @@ and [create a simulation job](https://docs.aws.amazon.com/robomaker/create-simul
 /object_detector
 ```
 
+
 ## Running the demonstration and workshop
+
+To roam around the simulated mars world and find martians, you can use the teleop_twist_keyboard commands by running the following statement in your terminal:
+
+```
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+```
 
 Full instructions on how to setup the AWS cloud infrastructure and run the demo can be found at: [https://www.robomakerworkshops.com](https://www.robomakerworkshops.com).
 

@@ -44,14 +44,14 @@
         "simulation": {
           "maxJobDurationInSeconds": 14400,
           "failureBehavior": "Fail",
-          "iamRole": "arn:aws:iam::127796135357:role/robomaker-simulation-role",
-          "outputLocation": "os-rover-assets",
+          "iamRole": "<YOUR_IAM_ROLE>",
+          "outputLocation": "<YOUR_S3_BUCKET>",
           "tags": {}
         },
         "robotApp": {
           "name": "martian-detector-robot",
           "sourceBundleFile": "./aws-robomaker-sample-application-mars-rover/robot_ws/bundle/output.tar",
-          "s3Bucket": "os-rover-assets",
+          "s3Bucket": "<YOUR_S3_BUCKET>",
           "architecture": "X86_64",
           "launchConfig": {
             "packageName": "martian_detector",
@@ -67,7 +67,7 @@
           "name": "rover-sim",
           "sourceBundleFile": "./aws-robomaker-sample-application-mars-rover/simulation_ws/bundle/output.tar",
           "architecture": "X86_64",
-          "s3Bucket": "os-rover-assets",
+          "s3Bucket": "<YOUR_S3_BUCKET>",
           "launchConfig": {
             "packageName": "rover_gazebo",
             "launchFile": "main_with_objects.launch",
