@@ -5,7 +5,7 @@
       "name": "Robot Build",
       "type": "colcon build",
       "cfg": {
-        "workingDir": "./aws-robomaker-sample-application-mars-rover/robot_ws",
+        "workingDir": "./aws-robomaker-sample-application-open-source-rover/robot_ws",
         "cmdArgs": ""
       }
     },
@@ -14,7 +14,7 @@
       "name": "Robot Bundle",
       "type": "colcon bundle",
       "cfg": {
-        "workingDir": "./aws-robomaker-sample-application-mars-rover/robot_ws",
+        "workingDir": "./aws-robomaker-sample-application-open-source-rover/robot_ws",
         "cmdArgs": ""
       }
     },
@@ -23,7 +23,7 @@
       "name": "Simulation Build",
       "type": "colcon build",
       "cfg": {
-        "workingDir": "./aws-robomaker-sample-application-mars-rover/simulation_ws",
+        "workingDir": "./aws-robomaker-sample-application-open-source-rover/simulation_ws",
         "cmdArgs": ""
       }
     },
@@ -32,7 +32,7 @@
       "name": "Simulation Bundle",
       "type": "colcon bundle",
       "cfg": {
-        "workingDir": "./aws-robomaker-sample-application-mars-rover/simulation_ws",
+        "workingDir": "./aws-robomaker-sample-application-open-source-rover/simulation_ws",
         "cmdArgs": ""
       }
     },
@@ -50,7 +50,7 @@
         },
         "robotApp": {
           "name": "martian-detector-robot",
-          "sourceBundleFile": "./aws-robomaker-sample-application-mars-rover/robot_ws/bundle/output.tar",
+          "sourceBundleFile": "./aws-robomaker-sample-application-open-source-rover/robot_ws/bundle/output.tar",
           "s3Bucket": "<YOUR_S3_BUCKET>",
           "architecture": "X86_64",
           "launchConfig": {
@@ -65,7 +65,7 @@
         },
         "simulationApp": {
           "name": "rover-sim",
-          "sourceBundleFile": "./aws-robomaker-sample-application-mars-rover/simulation_ws/bundle/output.tar",
+          "sourceBundleFile": "./aws-robomaker-sample-application-open-source-rover/simulation_ws/bundle/output.tar",
           "architecture": "X86_64",
           "s3Bucket": "<YOUR_S3_BUCKET>",
           "launchConfig": {
