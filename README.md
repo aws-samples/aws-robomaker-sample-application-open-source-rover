@@ -104,7 +104,7 @@ Full instructions on how to setup the AWS cloud infrastructure and run the demo 
 
 ## License
 
-MIT-0 - See LICENSE.txt for further information
+MIT-0 - See LICENSE for further information
 
 ## How to Contribute
 
