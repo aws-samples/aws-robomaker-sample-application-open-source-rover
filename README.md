@@ -7,7 +7,7 @@ _RoboMaker sample applications include third-party software licensed under open-
 ## Requirements
 
 - [ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu) - Other versions may work, however they have not been tested
-- [Colcon](https://colcon.readthedocs.io/en/released/user/installation.html) - Used for building and bundling the application. 
+- [Colcon](https://colcon.readthedocs.io/en/released/user/installation.html) - Used for building and bundling the application.
 
 ## Build
 
@@ -54,7 +54,7 @@ roslaunch rover_gazebo main_with_objects.launch
 
 ## Using this sample with RoboMaker
 
-You first need to install colcon-ros-bundle. Python 3.5 or above is required. 
+You first need to install colcon-ros-bundle. Python 3.5 or above is required.
 
 ```bash
 pip3 install -U setuptools
@@ -75,13 +75,13 @@ source install/local_setup.sh
 colcon bundle
 ```
 
-This produces the artifacts `robot_ws/bundle/output.tar` and `simulation_ws/bundle/output.tar` respectively. 
-You'll need to upload these to an s3 bucket, then you can use these files to 
-[create a robot application](https://docs.aws.amazon.com/robomaker/create-robot-application.html),  
-[create a simulation application](https://docs.aws.amazon.com/robomaker/create-simulation-application.html), 
-and [create a simulation job](https://docs.aws.amazon.com/robomaker/create-simulation-job.html) in RoboMaker.
+This produces the artifacts `robot_ws/bundle/output.tar` and `simulation_ws/bundle/output.tar` respectively.
+You'll need to upload these to an s3 bucket, then you can use these files to
+[create a robot application](https://docs.aws.amazon.com/robomaker/latest/dg/create-robot-application.html),
+[create a simulation application](https://docs.aws.amazon.com/robomaker/latest/dg/create-simulation-application.html),
+and [create a simulation job](https://docs.aws.amazon.com/robomaker/latest/dg/create-simulation-job.html) in RoboMaker.
 
-## ROS Nodes launched by this Sample 
+## ROS Nodes launched by this Sample
 
 ### Nodes created by this sample
 
@@ -109,5 +109,3 @@ MIT-0 - See LICENSE.txt for further information
 ## How to Contribute
 
 Create issues and pull requests against this Repository on Github
-
-
