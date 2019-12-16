@@ -11,7 +11,7 @@
     <parent link="body"/>
     <child link="rocker_left"/>
     <origin rpy="1.49669  0 1.57079" xyz="0 -0.16496 -0.30899"/>
-    <axis xyz="1  0  0"/>
+    <axis xyz="0  1  0"/>
     <limit effort="1.0" lower="0.0" upper="0.0" velocity="0.0"/>
   </joint>
   <transmission name="tran_body_rocker_left">
@@ -28,7 +28,7 @@
     <parent link="body"/>
     <child link="rocker_right"/>
     <origin rpy="1.57079 -0.0741   0" xyz="0       0.1649  -0.30899"/>
-    <axis xyz="0  0 -1"/>
+    <axis xyz="0  0  -1"/>
     <limit effort="1.0" lower="0.0" upper="0.0" velocity="0.0"/>
   </joint>
   <transmission name="tran_body_rocker_right">
@@ -538,17 +538,74 @@
   
   <joint name="camera_joint" type="fixed">
     <axis xyz="0 1 0" />
-    <origin xyz="1 0 1" rpy="0 0 3.14"/>
+    <origin xyz="-0.1 0 0" rpy="0 0 3.14"/>
     <parent link="body"/>
     <child link="camera_link"/>
   </joint>
 
+  <joint name="depthcamera_joint" type="fixed">
+    <axis xyz="0 0 0" />
+    <origin xyz="-0.1 0 0" rpy="0 0 3.14"/>
+    <parent link="body"/>
+    <child link="depthcamera_link"/>
+  </joint>
+
+  <joint name="pointcloud_joint" type="fixed">
+    <axis xyz="0 0 0" />
+    <origin xyz="-0.1 0 0" rpy="-1.58 0 -1.58"/>
+    <parent link="depthcamera_link"/>
+    <child link="pointcloud_link"/>
+  </joint>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="body"/>
+    <child link="imu_link"/>
+    <origin xyz="-0.032 0 0.068" rpy="0 0 3.14"/>
+  </joint>
+
+  <joint name="imu_wheel_rf_joint" type="fixed">
+    <parent link="corner_rf"/>
+    <child link="imu_wheel_rf_link"/>
+    <origin xyz="0 -0.1 0" rpy="-1.58 0 0"/>
+  </joint>
+
+  <joint name="imu_wheel_lf_joint" type="fixed">
+    <parent link="corner_lf"/>
+    <child link="imu_wheel_lf_link"/>
+    <origin xyz="0.028 -0.089 0.01" rpy="-1.58 0 0"/>
+  </joint>
+
+  <joint name="imu_wheel_rm_joint" type="fixed">
+    <parent link="bogie_right"/>
+    <child link="imu_wheel_rm_link"/>
+    <origin xyz="0.066 -0.182 -0.079" rpy="-1.58 0 0"/>
+  </joint>
+
+  <joint name="imu_wheel_lm_joint" type="fixed">
+    <parent link="bogie_left"/>
+    <child link="imu_wheel_lm_link"/>
+    <origin xyz="0.105 -0.179 0.078" rpy="-1.58 0 0"/>
+  </joint>
+
+  <joint name="imu_wheel_rb_joint" type="fixed">
+    <parent link="corner_rb"/>
+    <child link="imu_wheel_rb_link"/>
+    <origin xyz="0 -0.1 0" rpy="-1.58 0 0"/>
+  </joint>
+
+  <joint name="imu_wheel_lb_joint" type="fixed">
+    <parent link="corner_lb"/>
+    <child link="imu_wheel_lb_link"/>
+    <origin xyz="0.04 -0.069 0.005" rpy="-1.58 0 0"/>
+  </joint>
+
+
   <!-- Camera -->
   <link name="camera_link">
   <collision>
-    <origin xyz="-1 0 0" rpy="0 0 0"/>
+    <origin xyz="-0.01 0 0" rpy="0 0 3.14"/>
     <geometry>
-      <box size="1 1 1"/>
+      <box size="0.01 0.01 0.01"/>
     </geometry>
   </collision>
   </link>
@@ -592,6 +649,60 @@
       </plugin>
     </sensor>
   </gazebo>
+
+<!-- Depth Camera -->
+<link name="depthcamera_link">
+  <collision>
+    <origin xyz="-0.01 0 0" rpy="0 0 0"/>
+    <geometry>
+      <box size="0.01 0.01 0.01"/>
+    </geometry>
+  </collision>
+  </link>
+
+<link name="pointcloud_link"/>
+
+<gazebo reference="depthcamera_link">
+  <sensor name="depthcamera" type="depth">
+    <update_rate>10.0</update_rate>
+    <camera>
+      <horizontal_fov>1.047198</horizontal_fov>
+      <image>
+        <width>640</width>
+        <height>480</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.05</near>
+        <far>3</far>
+      </clip>
+    </camera>
+    <plugin name="depthcamera_controller" filename="libgazebo_ros_openni_kinect.so">
+      <baseline>0.2</baseline>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>1.0</updateRate>
+      <cameraName>depthcamera</cameraName>
+      <imageTopicName>/depthcamera/depth/image_raw</imageTopicName>
+      <cameraInfoTopicName>/depthcamera/depth/camera_info</cameraInfoTopicName>
+      <depthImageTopicName>/depthcamera/depth/image_raw</depthImageTopicName>
+      <depthImageInfoTopicName>/depthcamera/depth/camera_info</depthImageInfoTopicName>
+      <pointCloudTopicName>/depthcamera/depth/points</pointCloudTopicName>
+      <frameName>pointcloud_link</frameName>
+      <pointCloudCutoff>0.5</pointCloudCutoff>
+      <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+      <distortionK1>0.00000001</distortionK1>
+      <distortionK2>0.00000001</distortionK2>
+      <distortionK3>0.00000001</distortionK3>
+      <distortionT1>0.00000001</distortionT1>
+      <distortionT2>0.00000001</distortionT2>
+      <CxPrime>0</CxPrime>
+      <Cx>0</Cx>
+      <Cy>0</Cy>
+      <focalLength>0</focalLength>
+      <hackBaseline>0</hackBaseline>
+    </plugin>
+  </sensor>
+</gazebo>
   
   <!-- ROS control plugin -->
   <gazebo>
@@ -599,7 +710,451 @@
      <robotNamespace>rover_ns</robotNamespace>
      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
      <legacyModeNS>true</legacyModeNS>
+     <odometryTopic>odom</odometryTopic>
+     <odometryFrame>odom</odometryFrame>
+     <odometrySource>world</odometrySource>
+     <publishOdomTF>true</publishOdomTF>
    </plugin>
+  </gazebo>
+
+<!-- Groundtruth plugin -->
+<gazebo>
+<plugin name="robot_groundtruth_sim" filename="libgazebo_ros_p3d.so">
+  <alwaysOn>true</alwaysOn>
+  <updateRate>100.0</updateRate>
+  <bodyName>body</bodyName>
+  <topicName>odom</topicName>
+  <frameName>world</frameName>
+</plugin>
+</gazebo>
+
+   <!-- imu -->
+  <link name="imu_link"/>
+
+   <gazebo reference="imu_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+    </sensor>
+  </gazebo>
+
+   <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>body</bodyName>
+      <frameName>imu_link</frameName>
+      <topicName>imu</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0</gaussianNoise>
+      <updateRate>30</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>
+
+  <!-- imu wheel_lb -->
+    <link name="imu_wheel_lb_link"/>
+
+   <gazebo reference="imu_wheel_lb_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>corner_lb</bodyName>
+      <frameName>imu_wheel_lb_link</frameName>
+      <topicName>imu/wheel_lb</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0</gaussianNoise>
+      <updateRate>30</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>
+
+  <!-- imu wheel_rb -->
+    <link name="imu_wheel_rb_link"/>
+
+   <gazebo reference="imu_wheel_rb_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>corner_rb</bodyName>
+      <frameName>imu_wheel_rb_link</frameName>
+      <topicName>imu/wheel_rb</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0</gaussianNoise>
+      <updateRate>30</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>
+  <!-- imu wheel_lf -->
+    <link name="imu_wheel_lf_link"/>
+
+   <gazebo reference="imu_wheel_lf_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>corner_lf</bodyName>
+      <frameName>imu_wheel_lf_link</frameName>
+      <topicName>imu/wheel_lf</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0</gaussianNoise>
+      <updateRate>30</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>
+  <!-- imu wheel_rf -->
+    <link name="imu_wheel_rf_link"/>
+
+   <gazebo reference="imu_wheel_rf_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>corner_rf</bodyName>
+      <frameName>imu_wheel_rf_link</frameName>
+      <topicName>imu/wheel_rf</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0</gaussianNoise>
+      <updateRate>30</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>
+  <!-- imu wheel_lm -->
+    <link name="imu_wheel_lm_link"/>
+
+   <gazebo reference="imu_wheel_lm_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>bogie_left</bodyName>
+      <frameName>imu_wheel_lm_link</frameName>
+      <topicName>imu/wheel_lm</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0</gaussianNoise>
+      <updateRate>30</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>
+  <!-- imu wheel_rm -->
+    <link name="imu_wheel_rm_link"/>
+
+   <gazebo reference="imu_wheel_rm_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+    </sensor>
+  </gazebo>
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>bogie_right</bodyName>
+      <frameName>imu_wheel_rm_link</frameName>
+      <topicName>imu/wheel_rm</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0</gaussianNoise>
+      <updateRate>30</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>
+
+
+  <!-- contact sensor -->
+
+  <gazebo reference="body">
+  <!-- contact sensor -->
+    <sensor type="contact" name="body_contact_sensor">
+      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <contact>
+        <collision>body_collision_collision</collision>
+        <topic>/bumper_contact</topic>
+      </contact>
+      <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>3.0</updateRate>
+          <bumperTopicName>/robot_bumper</bumperTopicName>
+          <frameName>body</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="rocker_left">
+  <!-- contact sensor -->
+    <sensor type="contact" name="rocker_left_contact_sensor">
+      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <contact>
+        <collision>rocker_left_collision_collision</collision>
+        <topic>/bumper_contact</topic>
+      </contact>
+      <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>3.0</updateRate>
+          <bumperTopicName>/robot_bumper</bumperTopicName>
+          <frameName>rocker_left</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="rocker_right">
+  <!-- contact sensor -->
+    <sensor type="contact" name="rocker_right_contact_sensor">
+      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <contact>
+        <collision>rocker_right_collision_collision</collision>
+        <topic>/bumper_contact</topic>
+      </contact>
+      <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>3.0</updateRate>
+          <bumperTopicName>/robot_bumper</bumperTopicName>
+          <frameName>rocker_right</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="bogie_left">
+  <!-- contact sensor -->
+    <sensor type="contact" name="bogie_left_contact_sensor">
+      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <contact>
+        <collision>bogie_left_collision_collision</collision>
+        <topic>/bumper_contact</topic>
+      </contact>
+      <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>3.0</updateRate>
+          <bumperTopicName>/robot_bumper</bumperTopicName>
+          <frameName>bogie_left</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="bogie_right">
+  <!-- contact sensor -->
+    <sensor type="contact" name="bogie_right_contact_sensor">
+      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <contact>
+        <collision>bogie_right_collision_collision</collision>
+        <topic>/bumper_contact</topic>
+      </contact>
+      <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>3.0</updateRate>
+          <bumperTopicName>/robot_bumper</bumperTopicName>
+          <frameName>bogie_right</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="corner_lb">
+  <!-- contact sensor -->
+    <sensor type="contact" name="corner_lb_contact_sensor">
+      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <contact>
+        <collision>corner_lb_collision_collision</collision>
+        <topic>/bumper_contact</topic>
+      </contact>
+      <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>3.0</updateRate>
+          <bumperTopicName>/robot_bumper</bumperTopicName>
+          <frameName>corner_lb</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+
+  <gazebo reference="corner_rb">
+  <!-- contact sensor -->
+    <sensor type="contact" name="corner_rb_contact_sensor">
+      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <contact>
+        <collision>corner_rb_collision_collision</collision>
+        <topic>/bumper_contact</topic>
+      </contact>
+      <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>3.0</updateRate>
+          <bumperTopicName>/robot_bumper</bumperTopicName>
+          <frameName>corner_rb</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+
+  <gazebo reference="corner_rf">
+  <!-- contact sensor -->
+    <sensor type="contact" name="corner_rf_contact_sensor">
+      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <contact>
+        <collision>corner_rf_collision_collision</collision>
+        <topic>/bumper_contact</topic>
+      </contact>
+      <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>3.0</updateRate>
+          <bumperTopicName>/robot_bumper</bumperTopicName>
+          <frameName>corner_rf</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+
+  <gazebo reference="corner_lf">
+  <!-- contact sensor -->
+    <sensor type="contact" name="corner_lf_contact_sensor">
+      <update_rate>30.0</update_rate>
+      <always_on>1</always_on>
+      <contact>
+        <collision>corner_lf_collision_collision</collision>
+        <topic>/bumper_contact</topic>
+      </contact>
+      <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>3.0</updateRate>
+          <bumperTopicName>/robot_bumper</bumperTopicName>
+          <frameName>corner_lf</frameName>
+      </plugin>
+    </sensor>
   </gazebo>
   
 </robot>
