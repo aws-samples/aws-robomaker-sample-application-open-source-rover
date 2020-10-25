@@ -13,63 +13,66 @@
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
-
+import datetime as dt
 import rospy
 import boto3
 from std_msgs.msg import String
 from std_msgs.msg import Int64MultiArray
 
-aws_region = rospy.get_param('~/notifier/aws_region', 'us-west-2')
-s3_bucket_name = rospy.get_param('~/notifier/s3_bucket_name')
-search_object = rospy.get_param('~/notifier/search_object', 'Alien')
-phone_number = rospy.get_param('~/notifier/phone_number', '')
 
-s3 = boto3.resource('s3', aws_region)
-sns = boto3.client('sns', aws_region)
+DETECTIONS_PREFIX = 'detections'
+# sns = boto3.client('sns', aws_region)  #  Disable SNS for now, may enable it later if needed
 
 class Notifier():
 
     def __init__(self):
-        rospy.loginfo('Initializing Notifier node.')
-        self.object_sub = rospy.Subscriber ('/detected_objects', String, self.notify)
+        rospy.loginfo('(Notifier): initializing')
+        self.object_sub = rospy.Subscriber('/detected_objects', String, self.notify)
         self.pub = rospy.Publisher('/led_cmds', Int64MultiArray, queue_size=1)
 
+        self.aws_region = rospy.get_param('~/notifier/aws_region', 'us-west-2')
+        self.bucket = rospy.get_param('~/notifier/s3_bucket_name')
+        self.search_object = rospy.get_param('~/notifier/search_object', 'Alien')
+        self.article = 'an' if self.search_object.lower()[0] in ['a', 'e', 'i', 'o', 'u'] else 'a'
+        
+        rospy.loginfo('(Notifier) Region: {}, bucket: {}'.format(self.aws_region, self.bucket))
+        self.s3 = boto3.client('s3', self.aws_region)
+        
+        # This will store the details of detected search object
+        self.search_detect_key = '{}/{}.txt'.format(DETECTIONS_PREFIX, self.search_object)
+
+        # This will store all the most-recent detected objecs
+        self.all_detect_key = '{}/objects.txt'.format(DETECTIONS_PREFIX)
+        
+        self.s3.put_object(Body='searching...', Bucket=self.bucket, Key=self.all_detect_key)
+        self.s3.put_object(Body='searching...', Bucket=self.bucket, Key=self.search_detect_key)
+        
+    def log_to_s3(self, all_detected_objects=None, search_detected=False):
+        if all_detected_objects is not None:
+            # Store the actual value here
+            self.s3.put_object(Body=all_detected_objects, Bucket=self.bucket, Key=self.all_detect_key)
+        if search_detected:
+            # Store a standard message with updated timestamp
+            msg = 'Found {} {} @ {} (UTC)'.format(self.article, self.search_object, dt.datetime.utcnow().strftime('%H:%M:%S'))
+            self.s3.put_object(Body=msg, Bucket=self.bucket, Key=self.search_detect_key)
+        
     def notify(self, msg): 
         
         found_objects = msg.data
-        rospy.loginfo('Detected an object.  Object found: %s.', found_objects)                
-            
+        rospy.loginfo('(Notify) Detected {}'.format(found_objects))
+        
         try:
-            # log objects found to S3 for reporting
-            s3.Object(s3_bucket_name, 'web/objects.txt').put(
-                ACL='public-read', 
-                Body=found_objects)
-
-            led_msg = Int64MultiArray()
-            
-            #see if we found the search object.  if so, send alert.
-            objects = found_objects.split(',')
-            if search_object in objects:
-                rospy.loginfo('Found %s! Just what I was looking for!', search_object)
-                
-                #Alien found.  Send message to LED topic so the display will update if it's being used.
-                led_msg.data = [2, 1] # ^^
-                self.pub.publish(led_msg)
-
-                #send SMS message for the alert
-                if phone_number and len(phone_number) > 8: 
-                    rospy.loginfo('Sending SMS to %s', phone_number)
-                    sns.publish(PhoneNumber=phone_number, Message='Alert!  %s detected!' % search_object)
-            else:
-                #No alien found.  Publish message for simple face
-                led_msg.data = [0, 1] # -_-
-                self.pub.publish(led_msg)
+            self.log_to_s3(all_detected_objects=found_objects)
+            if self.search_object in found_objects.split(','):
+                rospy.loginfo('Found what I was looking for: {}'.format(self.search_object))
+                self.log_to_s3(search_detected=True)
 
         except Exception as e:
-            rospy.logerr('Error logging or sending alert. \n\n %s', str(e))
+            rospy.logerr('Error in Notifier.notify: {}'.format(e))
+
 
 def main():
-    rospy.init_node('notifier')
+    rospy.init_node('notifier', log_level=rospy.INFO)
     notifier = Notifier()
     rospy.spin()
 
