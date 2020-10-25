@@ -46,6 +46,11 @@
           "failureBehavior": "Fail",
           "iamRole": "<YOUR_IAM_ROLE>",
           "outputLocation": "<YOUR_S3_BUCKET>",
+          "vpcConfig": {
+            "subnets": [],
+            "securityGroups": [],
+            "assignPublicIp": true
+          },
           "tags": {}
         },
         "robotApp": {
@@ -60,7 +65,7 @@
           },
           "robotSoftwareSuite": {
             "name": "ROS",
-            "version": "Kinetic"
+            "version": "Melodic"
           }
         },
         "simulationApp": {
@@ -75,7 +80,7 @@
           },
           "simulationSoftwareSuite": {
             "name": "Gazebo",
-            "version": "7"
+            "version": "9"
           },
           "renderingEngine": {
             "name": "OGRE",
@@ -83,7 +88,7 @@
           },
           "robotSoftwareSuite": {
             "name": "ROS",
-            "version": "Kinetic"
+            "version": "Melodic"
           }
         }
       }
