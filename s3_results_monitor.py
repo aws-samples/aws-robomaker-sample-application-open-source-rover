@@ -1,8 +1,6 @@
 """ This can be used to check the results by watching the location in Amazon S3 where
 the Alien Detector stores the results.
 """
-from __future__ import print_function
-
 import os
 import time
 import argparse
