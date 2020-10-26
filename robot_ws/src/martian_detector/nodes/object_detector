@@ -33,15 +33,11 @@ class ObjectDetector():
         self.pub = rospy.Publisher('/detected_objects', String, queue_size=1)
         self.joysub = rospy.Subscriber("/joy", Joy, self.joystick_input)  # Kept this to show how to hook joystick if one is available
         
-        self.aws_region = rospy.get_param('~/object_detector/aws_region', 'us-west-2')
-        self.camera_topic = rospy.get_param('~/object_detector/camera_topic', '/camera/image_raw/compressed')
-        self.auto_capture = rospy.get_param('~/object_detector/auto_capture', True)
-
+        self.aws_region = rospy.get_param('~/object_detector/aws_region')
+        self.camera_topic = rospy.get_param('~/object_detector/camera_topic')
+        self.auto_capture = rospy.get_param('~/object_detector/auto_capture')
         self.rekognition = boto3.client('rekognition', self.aws_region)
-        
         self.last_capture_time = 0
-        
-        self.pub.publish("Object Detector initialized")
 
     def joystick_input(self, data):
         dpad = data.buttons[0:]

@@ -30,13 +30,12 @@ class Notifier():
         self.object_sub = rospy.Subscriber('/detected_objects', String, self.notify)
         self.pub = rospy.Publisher('/led_cmds', Int64MultiArray, queue_size=1)
 
-        self.aws_region = rospy.get_param('~/notifier/aws_region', 'us-west-2')
         self.bucket = rospy.get_param('~/notifier/s3_bucket_name')
-        self.search_object = rospy.get_param('~/notifier/search_object', 'Alien')
+        self.search_object = rospy.get_param('~/notifier/search_object')
         self.article = 'an' if self.search_object.lower()[0] in ['a', 'e', 'i', 'o', 'u'] else 'a'
         
-        rospy.loginfo('(Notifier) Region: {}, bucket: {}'.format(self.aws_region, self.bucket))
-        self.s3 = boto3.client('s3', self.aws_region)
+        rospy.loginfo('(Notifier) Bucket: {}'.format(self.bucket))
+        self.s3 = boto3.client('s3')
         
         # This will store the details of detected search object
         self.search_detect_key = '{}/{}.txt'.format(DETECTIONS_PREFIX, self.search_object)
@@ -44,16 +43,16 @@ class Notifier():
         # This will store all the most-recent detected objecs
         self.all_detect_key = '{}/objects.txt'.format(DETECTIONS_PREFIX)
         
-        self.s3.put_object(Body='searching...', Bucket=self.bucket, Key=self.all_detect_key)
-        self.s3.put_object(Body='searching...', Bucket=self.bucket, Key=self.search_detect_key)
+        self.log_to_s3(all_detected_objects='', search_detected_msg='Setting up')
+        self.started = False
         
-    def log_to_s3(self, all_detected_objects=None, search_detected=False):
+    def log_to_s3(self, all_detected_objects=None, search_detected_msg=None):
         if all_detected_objects is not None:
             # Store the actual value here
             self.s3.put_object(Body=all_detected_objects, Bucket=self.bucket, Key=self.all_detect_key)
-        if search_detected:
-            # Store a standard message with updated timestamp
-            msg = 'Found {} {} @ {} (UTC)'.format(self.article, self.search_object, dt.datetime.utcnow().strftime('%H:%M:%S'))
+        if search_detected_msg is not None:
+            # Add a timestamp here
+            msg = '{} @ {} (UTC)'.format(search_detected_msg, dt.datetime.utcnow().strftime('%H:%M:%S'))
             self.s3.put_object(Body=msg, Bucket=self.bucket, Key=self.search_detect_key)
         
     def notify(self, msg): 
@@ -65,8 +64,13 @@ class Notifier():
             self.log_to_s3(all_detected_objects=found_objects)
             if self.search_object in found_objects.split(','):
                 rospy.loginfo('Found what I was looking for: {}'.format(self.search_object))
-                self.log_to_s3(search_detected=True)
-
+                msg = 'Found {} {}'.format(self.article, self.search_object)
+                self.log_to_s3(search_detected_msg=msg)
+            elif not self.started:
+                self.log_to_s3(search_detected_msg='Started searching')
+                
+            self.started = True
+                
         except Exception as e:
             rospy.logerr('Error in Notifier.notify: {}'.format(e))
 
