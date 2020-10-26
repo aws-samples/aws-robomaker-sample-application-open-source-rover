@@ -30,12 +30,10 @@
 
       <!-- convert joint states to TF transforms for rviz, etc -->
       <remap from="joint_states" to="rover_ns/joint_states" />
-      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-        respawn="true" output="screen">
-      </node>
+      
+      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
-      <node name="motion" pkg="rover_description" type="motion" respawn="true" output="screen">
-      </node>
+      <node name="motion" pkg="rover_description" type="motion" respawn="true" output="screen" />
 
       <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> 
 

@@ -7,8 +7,8 @@
 	<arg name="headless" default="false"/>
 	<arg name="debug" default="false"/>
 	<arg name="verbose" default="true" />
-    <arg name="world" default="$(find rover_gazebo)/worlds/mars-with-objects.world"/>
-
+	<arg name="world" default="$(find rover_gazebo)/worlds/mars-with-alien.world"/>
+	
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">
 		<arg name="world_name" value="$(arg world)"/>
 		<arg name="debug" value="$(arg debug)" />
