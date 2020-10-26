@@ -61,7 +61,10 @@
           "launchConfig": {
             "packageName": "martian_detector",
             "launchFile": "martian_detector.launch",
-            "environmentVariables": {}
+            "environmentVariables": {
+              "S3_BUCKET": "<YOUR_S3_BUCKET>",
+              "REGION": "us-west-2"
+            }
           },
           "robotSoftwareSuite": {
             "name": "ROS",
