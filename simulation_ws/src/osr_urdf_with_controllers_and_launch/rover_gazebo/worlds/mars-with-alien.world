@@ -175,7 +175,7 @@
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
       </link>
-      <pose>-11 0 -0.8 0 -0 -0.6</pose>
+      <pose>-10 0 -0.6 0 0 -0.6</pose>
     </model>
     
   </world>
