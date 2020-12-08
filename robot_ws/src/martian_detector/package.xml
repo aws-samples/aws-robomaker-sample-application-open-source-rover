@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>martian_detector</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>The martian_detector package</description>
   <author email="ros-contributions@amazon.com">AWS RoboMaker</author>
   <maintainer email="ros-contributions@amazon.com">AWS RoboMaker</maintainer>

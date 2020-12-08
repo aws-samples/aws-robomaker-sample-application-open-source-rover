@@ -1,0 +1,40 @@
+ <launch>
+     <param name="robot_description"
+        command="$(find xacro)/xacro --inorder '$(find rover_description)/urdf/rover_description.urdf' stereo_camera:=false"/>
+
+      <!-- Spawn a robot into Gazebo. -->
+      <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+        args="-urdf -model rover -param robot_description -z 1 -x -2 -y -2"/>
+
+      <node name="message_to_tf" pkg="message_to_tf" type="message_to_tf" args="odom" respawn="true" />
+
+      <!-- Load joint controller configurations from YAML file to parameter server -->
+      <rosparam file="$(find rover_description)/config/rover_control.yaml" command="load"/>
+
+      <!-- load the controllers -->
+      <node name="controller_spawner" ns="rover_ns" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="body_rocker_left_controller
+        body_rocker_right_controller
+        corner_lf_wheel_lf_controller
+        bogie_left_wheel_lm_controller
+        corner_lb_wheel_lb_controller
+        corner_rb_wheel_rb_controller
+        bogie_right_wheel_rm_controller
+        corner_rf_wheel_rf_controller
+        rocker_left_bogie_left_controller
+        rocker_right_bogie_right_controller
+        bogie_left_corner_lf_controller
+        rocker_left_corner_lb_controller
+        rocker_right_corner_rb_controller
+        bogie_right_corner_rf_controller
+        joint_state_controller"/>
+
+      <!-- convert joint states to TF transforms for rviz, etc -->
+      <remap from="joint_states" to="rover_ns/joint_states" />
+      
+      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+      <node name="motion" pkg="rover_description" type="motion" respawn="true" output="screen" />
+
+      <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> 
+
+  </launch>

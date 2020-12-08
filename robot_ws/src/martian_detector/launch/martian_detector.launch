@@ -1,18 +1,15 @@
 <launch>
     <arg name="use_sim_time" default="true" />
-	<arg name="aws_region" default="us-west-2" />
-	<arg name="auto_capture" default="false" />
+	<arg name="auto_capture" default="true" />
 
 	<node name="object_detector" pkg="martian_detector" type="object_detector">
 		<param name="camera_topic" value="/camera/image_raw/compressed" />
-		<param name="aws_region" value="$(arg aws_region)" />
+		<param name="aws_region" value="$(optenv AWS_REGION us-east-1)" />
 		<param name="auto_capture" value="$(arg auto_capture)" />
 	</node>
 
 	<node name="notifier" pkg="martian_detector" type="notifier" >
-	    <param name="aws_region" value="$(arg aws_region)" />
-	    <param name="s3_bucket_name" value="" />
-	    <param name="phone_number" value="" type="str" />
+	    <param name="s3_bucket_name" value="$(optenv S3_BUCKET)" />
 	    <param name="search_object" value="Alien" />
 	</node>
 </launch>
